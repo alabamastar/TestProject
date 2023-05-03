@@ -1,0 +1,181 @@
+﻿<Window x:Class="UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:UI.ViewModels"
+        xmlns:nc="clr-namespace:UI.Controls"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="600" MinHeight="450" MinWidth="600">
+    
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger 
+                    Property="Validation.HasError"
+                    Value="True">
+                    <Setter
+                        Property="Text"
+                        Value="Test"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style TargetType="DataGridColumnHeader">
+            <Setter 
+                Property="FontSize"
+                Value="15"/>
+            
+            <Setter 
+                Property="HorizontalContentAlignment"
+                Value="Center"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid Margin="15,15,15,15">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.33*"/>
+                <ColumnDefinition Width="0.66*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.1*"/>
+                    <RowDefinition Height="0.9*"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock
+                    Grid.Row="0"
+                    Text="Список функций:" 
+                    FontSize="15"/>
+                
+                <ListBox 
+                    Grid.Row="1" 
+                    ItemsSource="{Binding FunctionList}"
+                    SelectedItem="{Binding SelectedFunctionVM}"/>
+            </Grid>
+            
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.33*"/>
+                        <ColumnDefinition Width="0.66*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock
+                        Grid.Column="0"
+                        Text="Коэффициент a:" 
+                        FontSize="15" 
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Center"/>
+
+                    <nc:NumericTextBox 
+                        Grid.Column="1"
+                        Text="{Binding SelectedFunctionVM.CoefficientsVM.CoefficientA, Mode=TwoWay}"
+                        VerticalAlignment="Center" 
+                        FontSize="15" 
+                        Margin="15, 15, 0, 15"/>
+                </Grid>
+                
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.33*"/>
+                        <ColumnDefinition Width="0.66*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock 
+                        Grid.Column="0" 
+                        Text="Коэффициент b:"
+                        FontSize="15" 
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Center"/>
+                    
+                    <nc:NumericTextBox 
+                        Grid.Column="1" 
+                        Text="{Binding SelectedFunctionVM.CoefficientsVM.CoefficientB}" 
+                        VerticalAlignment="Center" 
+                        FontSize="15"
+                        Margin="15, 15, 0, 15"/>
+                </Grid>
+                
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="0.33*"/>
+                        <ColumnDefinition Width="0.66*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock 
+                        Grid.Column="0" 
+                        Text="Коэффициент c:" 
+                        FontSize="15" 
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"/>
+                    
+                    <ComboBox 
+                        Grid.Column="1"
+                        ItemsSource="{Binding SelectedFunctionVM.CoefficientCList, Mode=OneWay}"
+                        SelectedItem="{Binding SelectedFunctionVM.CoefficientsVM.CoefficientC, Mode=TwoWay}" 
+                        VerticalAlignment="Center"
+                        FontSize="15"
+                        Margin="15, 15, 0, 15"/>
+                </Grid>
+            </Grid>
+        </Grid>
+        
+        <DataGrid 
+            Grid.Row="1" 
+            ColumnWidth="auto" 
+            AutoGenerateColumns="False"
+            ItemsSource="{Binding SelectedFunctionVM.TableValues}" 
+            SelectedItem="{Binding SelectedTableValuesVM, UpdateSourceTrigger=PropertyChanged}"
+            Margin="0,15,0,0"
+            CanUserAddRows="True"
+            IsReadOnly="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn 
+                    IsReadOnly="True"
+                    Binding="{Binding
+                    Path=FunctionValue}"
+                    Header="f(x, y)"
+                    Width="0.33*"/>
+                
+                <nc:DataGridNumericColumn
+                    IsReadOnly="False" 
+                    Binding="{Binding Path=VariableX, UpdateSourceTrigger=PropertyChanged}"
+                    Header="x"
+                    Width="0.33*"/>
+                
+                <nc:DataGridNumericColumn
+                    IsReadOnly="False" 
+                    Binding="{Binding Path=VariableY, UpdateSourceTrigger=PropertyChanged}"
+                    Header="y" 
+                    Width="0.33*"/>
+            </DataGrid.Columns>
+            
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="CellEditEnding">
+                    <i:InvokeCommandAction 
+                        Command="{Binding Path=CalculateCommand}" 
+                        CommandParameter="{Binding}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </DataGrid>
+    </Grid>
+</Window>
