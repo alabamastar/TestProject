@@ -1,5 +1,4 @@
 ﻿using BusinessLogic.ViewModels;
-using BusinessLogic.Services;
 
 namespace BusinessLogic.Services
 {
